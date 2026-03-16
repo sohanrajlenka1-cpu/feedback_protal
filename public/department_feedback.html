@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Institution Feedback</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+        
+        .logo {
+            display: block;
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .required {
+            color: red;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .checkbox-group label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .checkbox-group input {
+            width: auto;
+        }
+        
+        .rating-scale {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .rating-option {
+            flex: 1;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .rating-option input {
+            width: auto;
+            margin-bottom: 0.25rem;
+        }
+        
+        .rating-option label {
+            font-weight: normal;
+            font-size: 0.85rem;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #d24419 0%, #2a5298 100%);
+            color: rgba(255, 255, 255, 0.689);
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img class="logo" src="https://media.licdn.com/dms/image/v2/D560BAQE0gkaI7igpTQ/company-logo_200_200/company-logo_200_200/0/1714675006411?e=2147483647&v=beta&t=FOBBkM2wfmBgrmITordnRweYfk-42d1BO9ccRoDquS0" alt="Logo">
+        <h1>Department Feedback Form</h1>
+        <p class="subtitle">Help us improve by sharing your valuable feedback</p>
+        
+        <form id="institutionForm">
+            <div class="form-group">
+                <label>Name <span class="required">*</span></label>
+                <input type="text" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Email <span class="required">*</span></label>
+                <input type="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Registration Number <span class="required">*</span></label>
+                <input type="text" name="registration_number" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Department <span class="required">*</span></label>
+                <select name="department" required>
+                    <option value="">Select Department</option>
+                    <option value="ARCHITECTURAL ASSISTANTSHIP">ARCHITECTURAL ASSISTANTSHIP</option>
+                    <option value="BEAUTY CULTURE">BEAUTY CULTURE</option>
+                    <option value="CIVIL ENGINEERING">CIVIL ENGINEERING</option>
+                    <option value="ELECTRICAL ENGINEERING">ELECTRICAL ENGINEERING</option>
+                    <option value="ELECTRONICS & TELECOMMUNICATION ENGINEERING">ELECTRONICS & TELECOMMUNICATION ENGINEERING</option>
+                    <option value="PHARMACY">PHARMACY</option>
+                    <option value="INFORMATION TECHNOLOGY">INFORMATION TECHNOLOGY</option>
+                    <option value="MODERN OFFICE MANAGEMENT">MODERN OFFICE MANAGEMENT</option>
+                    <option value="MECHANICAL ENGINEERING">MECHANICAL ENGINEERING</option>
+                    <option value="OTHER">OTHER</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Academic Year <span class="required">*</span></label>
+                <select name="academic_year" required>
+                    <option value="">Select Year</option>
+                    <option value="2022-2025">2022-2025</option>
+                    <option value="2023-2026">2023-2026</option>
+                    <option value="2024-2027">2024-2027</option>
+                    <option value="2025-2028">2025-2028</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>How would you rate the overall quality of education? <span class="required">*</span></label>
+                <div class="rating-scale">
+                    <div class="rating-option">
+                        <input type="radio" name="education_quality" value="1" id="q1_1" required>
+                        <label for="q1_1">1 - Poor</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="education_quality" value="2" id="q1_2">
+                        <label for="q1_2">2 - Average</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="education_quality" value="3" id="q1_3">
+                        <label for="q1_3">3 - Good</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="education_quality" value="4" id="q1_4">
+                        <label for="q1_4">4 - Very Good</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="education_quality" value="5" id="q1_5">
+                        <label for="q1_5">5 - Excellent</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>How satisfied are you with the faculty? <span class="required">*</span></label>
+                <div class="rating-scale">
+                    <div class="rating-option">
+                        <input type="radio" name="faculty_satisfaction" value="1" id="q2_1" required>
+                        <label for="q2_1">1 - Poor</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="faculty_satisfaction" value="2" id="q2_2">
+                        <label for="q2_2">2 - Average</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="faculty_satisfaction" value="3" id="q2_3">
+                        <label for="q2_3">3 - Good</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="faculty_satisfaction" value="4" id="q2_4">
+                        <label for="q2_4">4 - Very Good</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="faculty_satisfaction" value="5" id="q2_5">
+                        <label for="q2_5">5 - Excellent</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>How would you rate the availability of computer labs and courses related labs? <span class="required">*</span></label>
+                <div class="rating-scale">
+                    <div class="rating-option">
+                        <input type="radio" name="labs_rating" value="1" id="q3_1" required>
+                        <label for="q3_1">1 - Poor</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="labs_rating" value="2" id="q3_2">
+                        <label for="q3_2">2</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="labs_rating" value="3" id="q3_3">
+                        <label for="q3_3">3</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="labs_rating" value="4" id="q3_4">
+                        <label for="q3_4">4</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="labs_rating" value="5" id="q3_5">
+                        <label for="q3_5">5 - Excellent</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>student centric activities in the department? <span class="required">*</span></label>
+                <div class="rating-scale">
+                    <div class="rating-option">
+                        <input type="radio" name="department_activities" value="1" id="q4_1" required>
+                        <label for="q4_1">1 - Poor</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="department_activities" value="2" id="q4_2">
+                        <label for="q4_2">2 - Average</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="department_activities" value="3" id="q4_3">
+                        <label for="q4_3">3 - Good</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="department_activities" value="4" id="q4_4">
+                        <label for="q4_4">4 - Very Good</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="department_activities" value="5" id="q4_5">
+                        <label for="q4_5">5 - Excellent</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>student and faculty bonding? <span class="required">*</span></label>
+                <div class="rating-scale">
+                    <div class="rating-option">
+                        <input type="radio" name="faculty_bonding" value="1" id="q5_1" required>
+                        <label for="q5_1">1 - Poor</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="faculty_bonding" value="2" id="q5_2">
+                        <label for="q5_2">2 - Average</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="faculty_bonding" value="3" id="q5_3">
+                        <label for="q5_3">3 - Good</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="faculty_bonding" value="4" id="q5_4">
+                        <label for="q5_4">4 - Very Good</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="faculty_bonding" value="5" id="q5_5">
+                        <label for="q5_5">5 - Excellent</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>What aspects need improvement? (Select all that apply)</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" name="improvements" value="Teaching Quality"> Teaching Quality</label>
+                    <label><input type="checkbox" name="improvements" value="Infrastructure"> Infrastructure</label>
+                    <label><input type="checkbox" name="improvements" value="Extracurricular Activities"> Extracurricular Activities</label>
+                    <label><input type="checkbox" name="improvements" value="Administrative Support"> Administrative Support</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Additional Comments or Suggestions</label>
+                <textarea name="comments" placeholder="Share your detailed feedback here..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn">Submit Feedback</button>
+        </form>
+    </div>
+    
+    <script>
+        document.getElementById('institutionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const improvements = formData.getAll('improvements').join(', ');
+            
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                registration_number: formData.get('registration_number'),
+                department: formData.get('department'),
+                academic_year: formData.get('academic_year'),
+                education_quality: parseInt(formData.get('education_quality')),
+                faculty_satisfaction: parseInt(formData.get('faculty_satisfaction')),
+                labs_rating: parseInt(formData.get('labs_rating')),
+                department_activities: parseInt(formData.get('department_activities')),
+                faculty_bonding: parseInt(formData.get('faculty_bonding')),
+                improvements: improvements,
+                comments: formData.get('comments') || ''
+            };
+            
+            try {
+                const response = await fetch('/submit-department-feedback', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    window.location.href = 'success.html';
+                } else {
+                    alert('Error submitting form');
+                }
+            } catch (error) {
+                alert('Server not running. Please start the server with: node server.js');
+            }
+        });
+    </script>
+</body>
+</html>
