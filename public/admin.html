@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f0c29; color: #fff; }
+        .navbar {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            background: linear-gradient(135deg, #1a0a2e, #302b63);
+            border-bottom: 2px solid #764ba2;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.6rem 2rem;
+        }
+        .navbar .brand { display: flex; align-items: center; gap: 0.7rem; }
+        .navbar .brand img { width: 42px; height: 42px; border-radius: 50%; }
+        .navbar .brand span { font-size: 1.15rem; font-weight: bold; }
+        .navbar nav { display: flex; gap: 0.3rem; }
+        .navbar nav a, .navbar nav button {
+            color: rgba(255,255,255,0.8); text-decoration: none;
+            padding: 0.5rem 1.2rem; border-radius: 6px; font-size: 0.95rem;
+            background: transparent; border: none; cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+        }
+        .navbar nav a:hover, .navbar nav button:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+        .container { max-width: 1100px; margin: 80px auto 2rem; padding: 0 1.5rem; }
+        h1 { font-size: 1.6rem; margin-bottom: 1.5rem; }
+
+        .tabs {
+            display: flex; gap: 0.5rem; margin-bottom: 1.5rem;
+        }
+        .tabs button {
+            padding: 0.6rem 1.5rem; border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px; background: transparent; color: rgba(255,255,255,0.6);
+            cursor: pointer; font-size: 0.95rem; transition: all 0.3s;
+        }
+        .tabs button.active {
+            background: rgba(118,75,162,0.4); color: #fff; border-color: #764ba2;
+        }
+
+        .actions { display: flex; gap: 0.8rem; margin-bottom: 2rem; }
+        .btn {
+            padding: 0.6rem 1.5rem; border: none; border-radius: 8px;
+            font-size: 0.9rem; cursor: pointer; transition: transform 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-download { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+
+        .chart-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;
+        }
+        .chart-card {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 1.2rem;
+        }
+        .chart-card h3 { font-size: 0.95rem; margin-bottom: 0.8rem; color: rgba(255,255,255,0.8); }
+
+        .stats {
+            display: flex; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 1.2rem 1.5rem; flex: 1; min-width: 150px; text-align: center;
+        }
+        .stat-card .num { font-size: 2rem; font-weight: bold; color: #764ba2; }
+        .stat-card .label { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-top: 0.3rem; }
+
+        .no-data { text-align: center; color: rgba(255,255,255,0.4); padding: 3rem; font-size: 1.1rem; }
+
+        @media (max-width: 700px) { .chart-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="brand">
+        <img src="https://media.licdn.com/dms/image/v2/D560BAQE0gkaI7igpTQ/company-logo_200_200/company-logo_200_200/0/1714675006411?e=2147483647&v=beta&t=FOBBkM2wfmBgrmITordnRweYfk-42d1BO9ccRoDquS0" alt="Logo">
+        <span>Admin Dashboard</span>
+    </div>
+    <nav>
+        <button onclick="localStorage.removeItem('user'); location.href='index.html'">Logout</button>
+    </nav>
+</div>
+
+<div class="container">
+    <h1>📊 Feedback Analytics</h1>
+
+    <div class="tabs">
+        <button class="active" onclick="switchType('department')">Department Feedback</button>
+        <button onclick="switchType('institution')">Institution Feedback</button>
+    </div>
+
+    <div class="actions">
+        <button class="btn btn-download" onclick="downloadCsv()">⬇ Download CSV</button>
+    </div>
+
+    <div id="content"></div>
+</div>
+
+<script>
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!user || user.role !== 'admin') window.location.href = 'index.html';
+
+    let currentType = 'department';
+    let charts = [];
+
+    function switchType(type) {
+        currentType = type;
+        document.querySelectorAll('.tabs button').forEach((b, i) =>
+            b.classList.toggle('active', (type === 'department' && i === 0) || (type === 'institution' && i === 1))
+        );
+        loadData();
+    }
+
+    function downloadCsv() {
+        window.location.href = '/api/admin/download/' + currentType;
+    }
+
+    function destroyCharts() {
+        charts.forEach(c => c.destroy());
+        charts = [];
+    }
+
+    function makeChart(canvasId, label, labels, data) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        const c = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label,
+                    data,
+                    backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe'],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { color: 'rgba(255,255,255,0.5)' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    x: { ticks: { color: 'rgba(255,255,255,0.5)' }, grid: { display: false } }
+                }
+            }
+        });
+        charts.push(c);
+    }
+
+    function avgByRating(rows, field) {
+        const counts = [0, 0, 0, 0, 0];
+        rows.forEach(r => { const v = parseInt(r[field]); if (v >= 1 && v <= 5) counts[v - 1]++; });
+        return counts;
+    }
+
+    async function loadData() {
+        destroyCharts();
+        const res = await fetch('/api/admin/feedback/' + currentType);
+        const { data } = await res.json();
+        const el = document.getElementById('content');
+
+        if (!data.length) {
+            el.innerHTML = '<div class="no-data">No feedback responses yet.</div>';
+            return;
+        }
+
+        const ratingFields = currentType === 'department'
+            ? [['education_quality', 'Education Quality'], ['faculty_satisfaction', 'Faculty Satisfaction'], ['labs_rating', 'Labs Rating'], ['department_activities', 'Dept Activities'], ['faculty_bonding', 'Faculty Bonding']]
+            : [['education_quality', 'Education Quality'], ['faculty_satisfaction', 'Faculty Satisfaction'], ['infrastructure_rating', 'Infrastructure']];
+
+        // Stats
+        const avgAll = ratingFields.map(([f]) => {
+            const vals = data.map(r => parseInt(r[f])).filter(v => v >= 1 && v <= 5);
+            return vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : '-';
+        });
+
+        let html = '<div class="stats">';
+        html += `<div class="stat-card"><div class="num">${data.length}</div><div class="label">Total Responses</div></div>`;
+        ratingFields.forEach(([, label], i) => {
+            html += `<div class="stat-card"><div class="num">${avgAll[i]}</div><div class="label">Avg ${label}</div></div>`;
+        });
+        html += '</div>';
+
+        // Charts
+        html += '<div class="chart-grid">';
+        ratingFields.forEach(([f, label], i) => {
+            html += `<div class="chart-card"><h3>${label} Distribution</h3><canvas id="chart${i}"></canvas></div>`;
+        });
+        html += '</div>';
+
+        el.innerHTML = html;
+
+        ratingFields.forEach(([f, label], i) => {
+            makeChart('chart' + i, label, ['1-Poor', '2-Avg', '3-Good', '4-VGood', '5-Excellent'], avgByRating(data, f));
+        });
+    }
+
+    loadData();
+</script>
+</body>
+</html>

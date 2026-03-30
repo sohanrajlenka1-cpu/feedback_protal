@@ -1,2 +1,3 @@
-id,name,email,password,created_at
-1,Omm,omm@gmail.com,12510aea97bf218f239a72ca3bf9237303b1f9c602b1b6df8906fdbfcdc467a1,2026-03-16T11:36:10.125Z
+id,name,email,registration_no,role,password,created_at
+1,Sohan,sohanraj@gmail.com,,admin,5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8,2026-03-22T11:32:46.039Z
+2,omm,omm@gmail.com,2024,student,5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8,2026-03-22T11:34:10.550Z

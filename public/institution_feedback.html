@@ -288,7 +288,31 @@
     </div>
     
     <script>
-        document.getElementById('institutionForm').addEventListener('submit', async function(e) {
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        if (!user) window.location.href = 'index.html';
+
+        const form = document.getElementById('institutionForm');
+        form.name.value = user.name;
+        form.email.value = user.email;
+        form.registration_number.value = user.registration_no;
+        form.name.readOnly = true;
+        form.email.readOnly = true;
+        form.registration_number.readOnly = true;
+
+        // Load existing feedback
+        fetch('/api/feedback/institution/' + encodeURIComponent(user.registration_no))
+            .then(r => r.json())
+            .then(({ feedback: fb }) => {
+                if (!fb) return;
+                form.department.value = fb.department;
+                form.academic_year.value = fb.academic_year;
+                const radios = ['education_quality','faculty_satisfaction','infrastructure_rating'];
+                radios.forEach(n => { const r = form.querySelector(`input[name="${n}"][value="${fb[n]}"]`); if (r) r.checked = true; });
+                if (fb.improvements) fb.improvements.split(', ').forEach(v => { const c = form.querySelector(`input[name="improvements"][value="${v}"]`); if (c) c.checked = true; });
+                form.comments.value = fb.comments || '';
+            });
+
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = new FormData(this);
@@ -313,11 +337,11 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(data)
                 });
-                
+                const result = await response.json();
                 if (response.ok) {
                     window.location.href = 'success.html';
                 } else {
-                    alert('Error submitting form');
+                    alert(result.error || 'Error submitting form');
                 }
             } catch (error) {
                 alert('Server not running. Please start the server with: node server.js');

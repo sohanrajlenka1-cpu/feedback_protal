@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Portal - Home</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f0c29; color: #fff; }
+
+        /* Navbar */
+        .navbar {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            background: linear-gradient(135deg, #1a0a2e, #302b63);
+            border-bottom: 2px solid #764ba2;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.6rem 2rem;
+        }
+        .navbar .brand { display: flex; align-items: center; gap: 0.7rem; }
+        .navbar .brand img { width: 42px; height: 42px; border-radius: 50%; }
+        .navbar .brand span { font-size: 1.15rem; font-weight: bold; }
+        .navbar nav { display: flex; gap: 0.3rem; }
+        .navbar nav a, .navbar nav button {
+            color: rgba(255,255,255,0.8); text-decoration: none;
+            padding: 0.5rem 1.2rem; border-radius: 6px; font-size: 0.95rem;
+            background: transparent; border: none; cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+        }
+        .navbar nav a:hover, .navbar nav button:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .navbar nav a.active { background: rgba(118,75,162,0.4); color: #fff; }
+
+        /* Carousel */
+        .carousel {
+            margin-top: 58px; position: relative; width: 100%;
+            height: 70vh; overflow: hidden;
+        }
+        .carousel .slides {
+            display: flex; height: 100%;
+            transition: transform 0.8s ease-in-out;
+        }
+        .carousel .slide {
+            min-width: 100%; height: 100%; position: relative;
+        }
+        .carousel .slide img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .carousel .slide .overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(15,12,41,0.85) 0%, rgba(15,12,41,0.2) 50%, rgba(15,12,41,0.4) 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+            padding: 3rem 1rem;
+        }
+        .carousel .slide .overlay h2 { font-size: 2.2rem; margin-bottom: 0.5rem; text-align: center; }
+        .carousel .slide .overlay p { color: rgba(255,255,255,0.7); font-size: 1.1rem; text-align: center; }
+        .carousel-dots {
+            position: absolute; bottom: 1rem; width: 100%;
+            display: flex; justify-content: center; gap: 0.5rem;
+        }
+        .carousel-dots span {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: rgba(255,255,255,0.3); cursor: pointer;
+            transition: background 0.3s;
+        }
+        .carousel-dots span.active { background: #764ba2; }
+
+        /* About Section */
+        .section {
+            max-width: 900px; margin: 3rem auto; padding: 0 1.5rem;
+        }
+        .section h2 {
+            font-size: 1.6rem; margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #764ba2;
+            display: inline-block;
+        }
+        .section p {
+            color: rgba(255,255,255,0.7); line-height: 1.8; font-size: 1rem;
+        }
+        .highlights {
+            display: flex; gap: 1.5rem; flex-wrap: wrap;
+            margin-top: 1.5rem; justify-content: center;
+        }
+        .highlights .item {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 1.5rem; text-align: center;
+            flex: 1; min-width: 180px;
+        }
+        .highlights .item .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .highlights .item h3 { font-size: 1rem; margin-bottom: 0.3rem; }
+        .highlights .item p { font-size: 0.85rem; }
+
+        /* Gallery */
+        .gallery-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.2rem; }
+        .gallery-tabs button {
+            padding: 0.5rem 1.2rem; border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px; background: transparent; color: rgba(255,255,255,0.6);
+            cursor: pointer; font-size: 0.9rem; transition: all 0.3s;
+        }
+        .gallery-tabs button.active { background: rgba(118,75,162,0.4); color: #fff; border-color: #764ba2; }
+        .gallery-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+        }
+        .gallery-grid img {
+            width: 100%; height: 180px; object-fit: cover;
+            border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s;
+        }
+        .gallery-grid img:hover { transform: scale(1.03); }
+        @media (max-width: 600px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        /* Footer */
+        .footer {
+            text-align: center; padding: 1.5rem;
+            color: rgba(255,255,255,0.3); font-size: 0.85rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="brand">
+        <img src="https://media.licdn.com/dms/image/v2/D560BAQE0gkaI7igpTQ/company-logo_200_200/company-logo_200_200/0/1714675006411?e=2147483647&v=beta&t=FOBBkM2wfmBgrmITordnRweYfk-42d1BO9ccRoDquS0" alt="Logo">
+        <span>Feedback Portal</span>
+    </div>
+    <nav>
+        <a href="#about">About</a>
+        <a href="#gallery">Gallery</a>
+        <a href="student_corner.html">Feedback</a>
+        <button onclick="localStorage.removeItem('user'); location.href='index.html'">Logout</button>
+    </nav>
+</div>
+
+<!-- Carousel -->
+<div class="carousel">
+    <div class="slides" id="slides">
+        <div class="slide">
+            <img src="images/img1.jpeg" alt="Campus">
+            <div class="overlay">
+                <h2>Welcome to Our Institution</h2>
+                <p>Empowering students through quality education</p>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="images/img2.jpeg" alt="Campus">
+            <div class="overlay">
+                <h2>Your Voice Matters</h2>
+                <p>Share your feedback to help us grow together</p>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="images/img3.jpeg" alt="Campus">
+            <div class="overlay">
+                <h2>Building a Better Tomorrow</h2>
+                <p>Infrastructure, faculty & opportunities for every student</p>
+            </div>
+        </div>
+    </div>
+    <div class="carousel-dots" id="dots"></div>
+</div>
+
+<!-- About -->
+<div class="section" id="about">
+    <h2>About the Portal</h2>
+    <p>
+        This Feedback Portal enables students to share their honest opinions about the department and institution.
+        Your feedback helps the administration identify areas of improvement and maintain high standards of education,
+        infrastructure, and student welfare. All responses are confidential and used solely for institutional development.
+    </p>
+    <div class="highlights">
+        <div class="item">
+            <div class="icon">🏢</div>
+            <h3>Department Feedback</h3>
+            <p>Rate education, labs, faculty bonding & activities</p>
+        </div>
+        <div class="item">
+            <div class="icon">🏛️</div>
+            <h3>Institution Feedback</h3>
+            <p>Rate infrastructure, faculty & overall quality</p>
+        </div>
+        <div class="item">
+            <div class="icon">✏️</div>
+            <h3>Update Response</h3>
+            <p>Update your feedback before the deadline</p>
+        </div>
+    </div>
+</div>
+
+<!-- Gallery -->
+<div class="section" id="gallery">
+    <h2>Gallery</h2>
+    <div class="gallery-tabs">
+        <button class="active" onclick="switchGallery('institution')">Institution</button>
+        <button onclick="switchGallery('department')">Department</button>
+        <button onclick="switchGallery('hostel')">Hostel</button>
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+</div>
+
+<div class="footer">© 2025 Feedback Portal. All rights reserved.</div>
+
+<script>
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!user) window.location.href = 'index.html';
+    if (user.role === 'admin') window.location.href = 'admin.html';
+
+    // Carousel
+    const slides = document.querySelectorAll('.slide');
+    const slidesContainer = document.getElementById('slides');
+    const dotsContainer = document.getElementById('dots');
+    let current = 0;
+
+    slides.forEach((_, i) => {
+        const dot = document.createElement('span');
+        if (i === 0) dot.classList.add('active');
+        dot.onclick = () => goTo(i);
+        dotsContainer.appendChild(dot);
+    });
+
+    function goTo(i) {
+        current = i;
+        slidesContainer.style.transform = `translateX(-${current * 100}%)`;
+        dotsContainer.querySelectorAll('span').forEach((d, j) => d.classList.toggle('active', j === current));
+    }
+
+    setInterval(() => goTo((current + 1) % slides.length), 4000);
+
+    // Gallery
+    const galleryImages = {
+        institution: [
+            'images/img1.jpeg',
+            'images/img2.jpeg',
+            'images/img3.jpeg',
+            'images/img4.jpeg',
+            'images/img5.jpeg'
+        ],
+        department: [
+            'images/img3.jpeg',
+            'images/img4.jpeg',
+            'images/img5.jpeg',
+            'images/img1.jpeg',
+            'images/img2.jpeg'
+        ],
+        hostel: [
+            'images/img5.jpeg',
+            'images/img4.jpeg',
+            'images/img3.jpeg',
+            'images/img2.jpeg',
+            'images/img1.jpeg'
+        ]
+    };
+
+    function switchGallery(tab) {
+        document.querySelectorAll('.gallery-tabs button').forEach(b =>
+            b.classList.toggle('active', b.textContent.toLowerCase() === tab)
+        );
+        document.getElementById('galleryGrid').innerHTML =
+            galleryImages[tab].map(src => `<img src="${src}" alt="${tab}">`).join('');
+    }
+    switchGallery('institution');
+</script>
+</body>
+</html>

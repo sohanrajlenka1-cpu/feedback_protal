@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Corner</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .header .logo {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            border: 2px solid rgba(255,255,255,0.15);
+        }
+        .header h1 { color: #fff; font-size: 2rem; margin-bottom: 0.3rem; }
+        .header p { color: rgba(255,255,255,0.5); }
+        .welcome {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+        .cards {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            width: 300px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .card .icon { font-size: 3rem; margin-bottom: 1rem; }
+        .card h2 { color: #fff; font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .card p { color: rgba(255,255,255,0.5); font-size: 0.9rem; line-height: 1.5; }
+        .card-dept { border-top: 3px solid #667eea; }
+        .card-inst { border-top: 3px solid #764ba2; }
+        .card-exit { border-top: 3px solid #e44d26; }
+        .card-parents { border-top: 3px solid #2ecc71; }
+        .back-btn {
+            margin-top: 2rem;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.6);
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <p class="welcome" id="welcomeMsg"></p>
+        <img class="logo" src="https://media.licdn.com/dms/image/v2/D560BAQE0gkaI7igpTQ/company-logo_200_200/company-logo_200_200/0/1714675006411?e=2147483647&v=beta&t=FOBBkM2wfmBgrmITordnRweYfk-42d1BO9ccRoDquS0" alt="Logo">
+        <h1>🎓 Student Corner</h1>
+        <p>Choose a feedback form to fill</p>
+    </div>
+    <div class="cards">
+        <div class="card card-dept" onclick="location.href='department_feedback.html'">
+            <div class="icon">🏢</div>
+            <h2>Department Feedback</h2>
+            <p>Rate your department's education quality, labs, faculty bonding & more</p>
+        </div>
+        <div class="card card-inst" onclick="location.href='institution_feedback.html'">
+            <div class="icon">🏛️</div>
+            <h2>Institution Feedback</h2>
+            <p>Rate the overall institution infrastructure, faculty & facilities</p>
+        </div>
+        <div class="card card-exit" onclick="location.href='exit_feedback.html'">
+            <div class="icon">🎓</div>
+            <h2>Exit Student Feedback</h2>
+            <p>Share your overall experience, placement support & suggestions as a graduating student</p>
+        </div>
+        <div class="card card-parents" onclick="location.href='parents_feedback.html'">
+            <div class="icon">👨‍👩‍👧</div>
+            <h2>Parents Feedback</h2>
+            <p>Parents can share feedback on education quality, safety, communication & facilities</p>
+        </div>
+    </div>
+    <button class="back-btn" onclick="location.href='home.html'">← Back to Home</button>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+        if (!user) window.location.href = 'index.html';
+        else document.getElementById('welcomeMsg').textContent = 'Welcome, ' + user.name + '!';
+    </script>
+</body>
+</html>

@@ -12,15 +12,19 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 const dataDir = path.join(__dirname, '..', 'data');
 const feedbackCsv = path.join(dataDir, 'feedback_institution.csv');
 const deptFeedbackCsv = path.join(dataDir, 'feedback_department.csv');
+const exitFeedbackCsv = path.join(dataDir, 'feedback_exit.csv');
+const parentsFeedbackCsv = path.join(dataDir, 'feedback_parents.csv');
 const usersCsv = path.join(dataDir, 'users.csv');
 
 // Ensure CSV files exist with headers
 function ensureCsv(file, headers) {
     if (!fs.existsSync(file)) fs.writeFileSync(file, headers + '\n');
 }
-ensureCsv(usersCsv, 'id,name,email,password,created_at');
+ensureCsv(usersCsv, 'id,name,email,registration_no,role,password,created_at');
 ensureCsv(feedbackCsv, 'id,name,email,registration_number,department,academic_year,education_quality,faculty_satisfaction,infrastructure_rating,improvements,comments,submitted_at');
 ensureCsv(deptFeedbackCsv, 'id,name,email,registration_number,department,academic_year,education_quality,faculty_satisfaction,labs_rating,department_activities,faculty_bonding,improvements,comments,submitted_at');
+ensureCsv(exitFeedbackCsv, 'id,name,email,registration_number,department,year_of_passing,overall_experience,placement_support,curriculum_relevance,skill_development,recommend,improvements,comments,submitted_at');
+ensureCsv(parentsFeedbackCsv, 'id,name,email,registration_number,department,academic_year,education_quality,safety_discipline,communication,infrastructure,overall_development,recommend,improvements,comments,submitted_at');
 
 function csvEscape(val) {
     const s = String(val ?? '');
@@ -62,16 +66,35 @@ function hashPassword(pw) {
     return crypto.createHash('sha256').update(pw).digest('hex');
 }
 
+function rewriteCsv(file, rows) {
+    const content = fs.readFileSync(file, 'utf-8');
+    const headers = content.split(/\r?\n/)[0];
+    const lines = rows.map(r => {
+        const vals = headers.split(',').map(h => csvEscape(r[h] || ''));
+        return vals.join(',');
+    });
+    fs.writeFileSync(file, headers + '\n' + lines.join('\n') + '\n');
+}
+
 // Auth
 app.post('/api/signup', (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, registration_no, role, admin_code, password } = req.body;
+    if (role === 'admin' && admin_code !== 'GPBBSRIT@2026') {
+        return res.status(403).json({ error: 'Invalid admin code' });
+    }
     const users = parseCsv(usersCsv);
     if (users.find(u => u.email === email)) {
         return res.status(400).json({ error: 'Email already registered' });
     }
+    if (role === 'student') {
+        if (!registration_no) return res.status(400).json({ error: 'Registration number is required' });
+        if (users.find(u => u.registration_no === registration_no)) {
+            return res.status(400).json({ error: 'Registration number already registered' });
+        }
+    }
     const id = getNextId(usersCsv);
-    appendRow(usersCsv, [id, name, email, hashPassword(password), new Date().toISOString()]);
-    res.json({ user: { id, name, email } });
+    appendRow(usersCsv, [id, name, email, registration_no || '', role, hashPassword(password), new Date().toISOString()]);
+    res.json({ user: { id, name, email, registration_no: registration_no || '', role } });
 });
 
 app.post('/api/login', (req, res) => {
@@ -79,43 +102,163 @@ app.post('/api/login', (req, res) => {
     const users = parseCsv(usersCsv);
     const user = users.find(u => u.email === email && u.password === hashPassword(password));
     if (!user) return res.status(401).json({ error: 'Invalid email or password' });
-    res.json({ user: { id: user.id, name: user.name, email: user.email } });
+    res.json({ user: { id: user.id, name: user.name, email: user.email, registration_no: user.registration_no, role: user.role } });
 });
 
-// Institution feedback
+// Get existing feedback
+app.get('/api/feedback/institution/:regNo', (req, res) => {
+    const rows = parseCsv(feedbackCsv);
+    const existing = rows.find(r => r.registration_number === req.params.regNo);
+    res.json({ feedback: existing || null });
+});
+
+app.get('/api/feedback/department/:regNo', (req, res) => {
+    const rows = parseCsv(deptFeedbackCsv);
+    const existing = rows.find(r => r.registration_number === req.params.regNo);
+    res.json({ feedback: existing || null });
+});
+
+app.get('/api/feedback/exit/:regNo', (req, res) => {
+    const rows = parseCsv(exitFeedbackCsv);
+    const existing = rows.find(r => r.registration_number === req.params.regNo);
+    res.json({ feedback: existing || null });
+});
+
+app.get('/api/feedback/parents/:regNo', (req, res) => {
+    const rows = parseCsv(parentsFeedbackCsv);
+    const existing = rows.find(r => r.registration_number === req.params.regNo);
+    res.json({ feedback: existing || null });
+});
+
+// Institution feedback (upsert)
 app.post('/submit-feedback', (req, res) => {
     try {
         const { name, email, registration_number, department, academic_year,
                 education_quality, faculty_satisfaction, infrastructure_rating,
                 improvements, comments } = req.body;
-        const id = getNextId(feedbackCsv);
-        appendRow(feedbackCsv, [id, name, email, registration_number, department,
-            academic_year, education_quality, faculty_satisfaction, infrastructure_rating,
-            improvements, comments, new Date().toISOString()]);
+        const rows = parseCsv(feedbackCsv);
+        const idx = rows.findIndex(r => r.registration_number === registration_number);
+        const now = new Date().toISOString();
+        if (idx >= 0) {
+            Object.assign(rows[idx], { name, email, registration_number, department, academic_year,
+                education_quality, faculty_satisfaction, infrastructure_rating,
+                improvements, comments, submitted_at: now });
+            rewriteCsv(feedbackCsv, rows);
+        } else {
+            const id = getNextId(feedbackCsv);
+            appendRow(feedbackCsv, [id, name, email, registration_number, department,
+                academic_year, education_quality, faculty_satisfaction, infrastructure_rating,
+                improvements, comments, now]);
+        }
         res.json({ status: 'success' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// Department feedback
+// Department feedback (upsert)
 app.post('/submit-department-feedback', (req, res) => {
     try {
         const { name, email, registration_number, department, academic_year,
                 education_quality, faculty_satisfaction, labs_rating,
                 department_activities, faculty_bonding,
                 improvements, comments } = req.body;
-        const id = getNextId(deptFeedbackCsv);
-        appendRow(deptFeedbackCsv, [id, name, email, registration_number, department,
-            academic_year, education_quality, faculty_satisfaction, labs_rating,
-            department_activities, faculty_bonding, improvements, comments,
-            new Date().toISOString()]);
+        const rows = parseCsv(deptFeedbackCsv);
+        const idx = rows.findIndex(r => r.registration_number === registration_number);
+        const now = new Date().toISOString();
+        if (idx >= 0) {
+            Object.assign(rows[idx], { name, email, registration_number, department, academic_year,
+                education_quality, faculty_satisfaction, labs_rating,
+                department_activities, faculty_bonding, improvements, comments, submitted_at: now });
+            rewriteCsv(deptFeedbackCsv, rows);
+        } else {
+            const id = getNextId(deptFeedbackCsv);
+            appendRow(deptFeedbackCsv, [id, name, email, registration_number, department,
+                academic_year, education_quality, faculty_satisfaction, labs_rating,
+                department_activities, faculty_bonding, improvements, comments, now]);
+        }
         res.json({ status: 'success' });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
+// Exit feedback (upsert)
+app.post('/submit-exit-feedback', (req, res) => {
+    try {
+        const { name, email, registration_number, department, year_of_passing,
+                overall_experience, placement_support, curriculum_relevance,
+                skill_development, recommend, improvements, comments } = req.body;
+        const rows = parseCsv(exitFeedbackCsv);
+        const idx = rows.findIndex(r => r.registration_number === registration_number);
+        const now = new Date().toISOString();
+        if (idx >= 0) {
+            Object.assign(rows[idx], { name, email, registration_number, department, year_of_passing,
+                overall_experience, placement_support, curriculum_relevance,
+                skill_development, recommend, improvements, comments, submitted_at: now });
+            rewriteCsv(exitFeedbackCsv, rows);
+        } else {
+            const id = getNextId(exitFeedbackCsv);
+            appendRow(exitFeedbackCsv, [id, name, email, registration_number, department,
+                year_of_passing, overall_experience, placement_support, curriculum_relevance,
+                skill_development, recommend, improvements, comments, now]);
+        }
+        res.json({ status: 'success' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Parents feedback (upsert)
+app.post('/submit-parents-feedback', (req, res) => {
+    try {
+        const { name, email, registration_number, department, academic_year,
+                education_quality, safety_discipline, communication,
+                infrastructure, overall_development, recommend, improvements, comments } = req.body;
+        const rows = parseCsv(parentsFeedbackCsv);
+        const idx = rows.findIndex(r => r.registration_number === registration_number);
+        const now = new Date().toISOString();
+        if (idx >= 0) {
+            Object.assign(rows[idx], { name, email, registration_number, department, academic_year,
+                education_quality, safety_discipline, communication,
+                infrastructure, overall_development, recommend, improvements, comments, submitted_at: now });
+            rewriteCsv(parentsFeedbackCsv, rows);
+        } else {
+            const id = getNextId(parentsFeedbackCsv);
+            appendRow(parentsFeedbackCsv, [id, name, email, registration_number, department,
+                academic_year, education_quality, safety_discipline, communication,
+                infrastructure, overall_development, recommend, improvements, comments, now]);
+        }
+        res.json({ status: 'success' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Admin APIs
+app.get('/api/admin/feedback/institution', (req, res) => {
+    res.json({ data: parseCsv(feedbackCsv) });
+});
+
+app.get('/api/admin/feedback/department', (req, res) => {
+    res.json({ data: parseCsv(deptFeedbackCsv) });
+});
+
+app.get('/api/admin/feedback/exit', (req, res) => {
+    res.json({ data: parseCsv(exitFeedbackCsv) });
+});
+
+app.get('/api/admin/feedback/parents', (req, res) => {
+    res.json({ data: parseCsv(parentsFeedbackCsv) });
+});
+
+app.get('/api/admin/download/:type', (req, res) => {
+    const files = { department: deptFeedbackCsv, institution: feedbackCsv, exit: exitFeedbackCsv, parents: parentsFeedbackCsv };
+    const file = files[req.params.type] || feedbackCsv;
+    res.download(file, `feedback_${req.params.type}.csv`);
+});
+
 app.get('/', (req, res) => res.redirect('/index.html'));
 
-app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
