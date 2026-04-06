@@ -56,7 +56,7 @@
             </div>
             <div class="form-group">
                 <label>Student Name <span class="required">*</span></label>
-                <input type="text" name="name" required>
+                <input type="text" name="student_name" required>
             </div>
             <div class="form-group">
                 <label>Email <span class="required">*</span></label>
@@ -232,11 +232,14 @@
             .then(r => r.json())
             .then(({ feedback: fb }) => {
                 if (!fb) return;
+                form.student_name.value = fb.student_name || '';
                 form.department.value = fb.department;
                 form.academic_year.value = fb.academic_year;
-                const radios = ['education_quality','safety_discipline','communication','infrastructure','overall_development','recommend'];
+                const radios = ['teaching_learning','students_interaction','academic_facilities','students_discipline','overall_facilities','career_guidance'];
                 radios.forEach(n => { const r = form.querySelector(`input[name="${n}"][value="${fb[n]}"]`); if (r) r.checked = true; });
-                if (fb.improvements) fb.improvements.split(', ').forEach(v => { const c = form.querySelector(`input[name="improvements"][value="${v}"]`); if (c) c.checked = true; });
+                ['placement_drive','internship_program','extracurricular_activities','curriculum_satisfaction'].forEach(n => {
+                    if (fb[n]) fb[n].split(', ').forEach(v => { const c = form.querySelector(`input[name="${n}"][value="${v}"]`); if (c) c.checked = true; });
+                });
                 form.comments.value = fb.comments || '';
             });
 
@@ -245,17 +248,21 @@
             const formData = new FormData(this);
             const data = {
                 name: formData.get('name'),
+                student_name: formData.get('student_name'),
                 email: formData.get('email'),
                 registration_number: formData.get('registration_number'),
                 department: formData.get('department'),
                 academic_year: formData.get('academic_year'),
-                education_quality: parseInt(formData.get('education_quality')),
-                safety_discipline: parseInt(formData.get('safety_discipline')),
-                communication: parseInt(formData.get('communication')),
-                infrastructure: parseInt(formData.get('infrastructure')),
-                overall_development: parseInt(formData.get('overall_development')),
-                recommend: parseInt(formData.get('recommend')),
-                improvements: formData.getAll('improvements').join(', '),
+                teaching_learning: parseInt(formData.get('teaching_learning')),
+                students_interaction: parseInt(formData.get('students_interaction')),
+                academic_facilities: parseInt(formData.get('academic_facilities')),
+                students_discipline: parseInt(formData.get('students_discipline')),
+                overall_facilities: parseInt(formData.get('overall_facilities')),
+                career_guidance: parseInt(formData.get('career_guidance')),
+                placement_drive: formData.getAll('placement_drive').join(', '),
+                internship_program: formData.getAll('internship_program').join(', '),
+                extracurricular_activities: formData.getAll('extracurricular_activities').join(', '),
+                curriculum_satisfaction: formData.getAll('curriculum_satisfaction').join(', '),
                 comments: formData.get('comments') || ''
             };
             try {

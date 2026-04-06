@@ -216,7 +216,7 @@
                 if (!fb) return;
                 form.department.value = fb.department;
                 form.year_of_passing.value = fb.year_of_passing;
-                const radios = ['overall_experience','placement_support','curriculum_relevance','skill_development','recommend'];
+                const radios = ['basic_discipline_knowledge','growth_analytical_skills','capacity_building','practical_classes','beyond_syllabus','team_spirit','learning_environment','facilities'];
                 radios.forEach(n => { const r = form.querySelector(`input[name="${n}"][value="${fb[n]}"]`); if (r) r.checked = true; });
                 if (fb.improvements) fb.improvements.split(', ').forEach(v => { const c = form.querySelector(`input[name="improvements"][value="${v}"]`); if (c) c.checked = true; });
                 form.comments.value = fb.comments || '';
@@ -231,12 +231,15 @@
                 registration_number: formData.get('registration_number'),
                 department: formData.get('department'),
                 year_of_passing: formData.get('year_of_passing'),
-                overall_experience: parseInt(formData.get('overall_experience')),
-                placement_support: parseInt(formData.get('placement_support')),
-                curriculum_relevance: parseInt(formData.get('curriculum_relevance')),
-                skill_development: parseInt(formData.get('skill_development')),
-                recommend: parseInt(formData.get('recommend')),
+                basic_discipline_knowledge: parseInt(formData.get('basic_discipline_knowledge')),
+                growth_analytical_skills: parseInt(formData.get('growth_analytical_skills')),
+                capacity_building: parseInt(formData.get('capacity_building')),
+                practical_classes: parseInt(formData.get('practical_classes')),
+                beyond_syllabus: parseInt(formData.get('beyond_syllabus')),
+                team_spirit: parseInt(formData.get('team_spirit')),
                 improvements: formData.getAll('improvements').join(', '),
+                learning_environment: parseInt(formData.get('learning_environment')),
+                facilities: parseInt(formData.get('facilities')),
                 comments: formData.get('comments') || ''
             };
             try {

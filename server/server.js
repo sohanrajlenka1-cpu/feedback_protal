@@ -23,8 +23,8 @@ function ensureCsv(file, headers) {
 ensureCsv(usersCsv, 'id,name,email,registration_no,role,password,created_at');
 ensureCsv(feedbackCsv, 'id,name,email,registration_number,department,academic_year,education_quality,faculty_satisfaction,infrastructure_rating,improvements,comments,submitted_at');
 ensureCsv(deptFeedbackCsv, 'id,name,email,registration_number,department,academic_year,education_quality,faculty_satisfaction,labs_rating,department_activities,faculty_bonding,improvements,comments,submitted_at');
-ensureCsv(exitFeedbackCsv, 'id,name,email,registration_number,department,year_of_passing,overall_experience,placement_support,curriculum_relevance,skill_development,recommend,improvements,comments,submitted_at');
-ensureCsv(parentsFeedbackCsv, 'id,name,email,registration_number,department,academic_year,education_quality,safety_discipline,communication,infrastructure,overall_development,recommend,improvements,comments,submitted_at');
+ensureCsv(exitFeedbackCsv, 'id,name,email,registration_number,department,year_of_passing,basic_discipline_knowledge,growth_analytical_skills,capacity_building,practical_classes,beyond_syllabus,team_spirit,improvements,learning_environment,facilities,comments,submitted_at');
+ensureCsv(parentsFeedbackCsv, 'id,name,student_name,email,registration_number,department,academic_year,teaching_learning,students_interaction,academic_facilities,students_discipline,overall_facilities,career_guidance,placement_drive,internship_program,extracurricular_activities,curriculum_satisfaction,comments,submitted_at');
 
 function csvEscape(val) {
     const s = String(val ?? '');
@@ -187,21 +187,24 @@ app.post('/submit-department-feedback', (req, res) => {
 app.post('/submit-exit-feedback', (req, res) => {
     try {
         const { name, email, registration_number, department, year_of_passing,
-                overall_experience, placement_support, curriculum_relevance,
-                skill_development, recommend, improvements, comments } = req.body;
+                basic_discipline_knowledge, growth_analytical_skills, capacity_building,
+                practical_classes, beyond_syllabus, team_spirit, improvements,
+                learning_environment, facilities, comments } = req.body;
         const rows = parseCsv(exitFeedbackCsv);
         const idx = rows.findIndex(r => r.registration_number === registration_number);
         const now = new Date().toISOString();
         if (idx >= 0) {
             Object.assign(rows[idx], { name, email, registration_number, department, year_of_passing,
-                overall_experience, placement_support, curriculum_relevance,
-                skill_development, recommend, improvements, comments, submitted_at: now });
+                basic_discipline_knowledge, growth_analytical_skills, capacity_building,
+                practical_classes, beyond_syllabus, team_spirit, improvements,
+                learning_environment, facilities, comments, submitted_at: now });
             rewriteCsv(exitFeedbackCsv, rows);
         } else {
             const id = getNextId(exitFeedbackCsv);
             appendRow(exitFeedbackCsv, [id, name, email, registration_number, department,
-                year_of_passing, overall_experience, placement_support, curriculum_relevance,
-                skill_development, recommend, improvements, comments, now]);
+                year_of_passing, basic_discipline_knowledge, growth_analytical_skills, capacity_building,
+                practical_classes, beyond_syllabus, team_spirit, improvements,
+                learning_environment, facilities, comments, now]);
         }
         res.json({ status: 'success' });
     } catch (err) {
@@ -212,22 +215,28 @@ app.post('/submit-exit-feedback', (req, res) => {
 // Parents feedback (upsert)
 app.post('/submit-parents-feedback', (req, res) => {
     try {
-        const { name, email, registration_number, department, academic_year,
-                education_quality, safety_discipline, communication,
-                infrastructure, overall_development, recommend, improvements, comments } = req.body;
+        const { name, student_name, email, registration_number, department, academic_year,
+                teaching_learning, students_interaction, academic_facilities,
+                students_discipline, overall_facilities, career_guidance,
+                placement_drive, internship_program, extracurricular_activities,
+                curriculum_satisfaction, comments } = req.body;
         const rows = parseCsv(parentsFeedbackCsv);
         const idx = rows.findIndex(r => r.registration_number === registration_number);
         const now = new Date().toISOString();
         if (idx >= 0) {
-            Object.assign(rows[idx], { name, email, registration_number, department, academic_year,
-                education_quality, safety_discipline, communication,
-                infrastructure, overall_development, recommend, improvements, comments, submitted_at: now });
+            Object.assign(rows[idx], { name, student_name, email, registration_number, department, academic_year,
+                teaching_learning, students_interaction, academic_facilities,
+                students_discipline, overall_facilities, career_guidance,
+                placement_drive, internship_program, extracurricular_activities,
+                curriculum_satisfaction, comments, submitted_at: now });
             rewriteCsv(parentsFeedbackCsv, rows);
         } else {
             const id = getNextId(parentsFeedbackCsv);
-            appendRow(parentsFeedbackCsv, [id, name, email, registration_number, department,
-                academic_year, education_quality, safety_discipline, communication,
-                infrastructure, overall_development, recommend, improvements, comments, now]);
+            appendRow(parentsFeedbackCsv, [id, name, student_name, email, registration_number, department,
+                academic_year, teaching_learning, students_interaction, academic_facilities,
+                students_discipline, overall_facilities, career_guidance,
+                placement_drive, internship_program, extracurricular_activities,
+                curriculum_satisfaction, comments, now]);
         }
         res.json({ status: 'success' });
     } catch (err) {
