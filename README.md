@@ -44,6 +44,31 @@ Server runs at `http://localhost:3000`
 
 > **Note:** Render's free tier has an ephemeral filesystem — CSV data resets on each deploy/restart. Use Render Disks or migrate to a database for persistence.
 
+## Changelog
+
+### v1.2 — Parents Feedback Form
+- Added `parents_feedback.html` with 6 rating questions (education quality, safety & discipline, communication, infrastructure, overall development, recommendation)
+- Added `/submit-parents-feedback` POST API and `/api/feedback/parents/:regNo` GET API
+- Added `/api/admin/feedback/parents` admin endpoint and CSV download support
+- Added Parents Feedback card to Student Corner page
+
+### v1.1 — Exit Student Feedback Form
+- Added `exit_feedback.html` with rating questions (discipline knowledge, analytical skills, capacity building, practical classes, beyond syllabus, team spirit, learning environment, facilities)
+- Added `/submit-exit-feedback` POST API and `/api/feedback/exit/:regNo` GET API
+- Added `/api/admin/feedback/exit` admin endpoint and CSV download support
+- Added Exit Student Feedback card to Student Corner page
+- Created `feedback_exit.csv` and `feedback_parents.csv` data files
+
+### v1.0 — Initial Release
+- User signup & login (Student / Admin roles)
+- Department Feedback Form (education quality, labs, faculty bonding, etc.)
+- Institution Feedback Form (education quality, faculty, infrastructure, etc.)
+- Admin Dashboard with analytics
+- CSV-based data storage
+- Student Corner with feedback form selection
+- Auto-redirect after successful submission
+- Responsive UI with dark theme
+
 ## Project Structure
 
 ```
