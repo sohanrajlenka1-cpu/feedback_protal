@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Institution Feedback</title>
+    <title>Department Feedback</title>
     <style>
         * {
             margin: 0;
@@ -136,6 +136,13 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
+        @media (max-width: 500px) {
+            .container { padding: 1.2rem; }
+            h1 { font-size: 1.2rem; }
+            .rating-scale { flex-wrap: wrap; gap: 0.3rem; }
+            .rating-option { min-width: 45px; flex: none; width: 18%; }
+            .rating-option label { font-size: 0.7rem; }
+        }
     </style>
 </head>
 <body>
@@ -144,7 +151,7 @@
         <h1>Department Feedback Form</h1>
         <p class="subtitle">Help us improve by sharing your valuable feedback</p>
         
-        <form id="institutionForm">
+        <form id="departmentForm">
             <div class="form-group">
                 <label>Name <span class="required">*</span></label>
                 <input type="text" name="name" required>
@@ -249,15 +256,15 @@
                     </div>
                     <div class="rating-option">
                         <input type="radio" name="labs_rating" value="2" id="q3_2">
-                        <label for="q3_2">2</label>
+                        <label for="q3_2">2 - Average</label>
                     </div>
                     <div class="rating-option">
                         <input type="radio" name="labs_rating" value="3" id="q3_3">
-                        <label for="q3_3">3</label>
+                        <label for="q3_3">3 - Good</label>
                     </div>
                     <div class="rating-option">
                         <input type="radio" name="labs_rating" value="4" id="q3_4">
-                        <label for="q3_4">4</label>
+                        <label for="q3_4">4 - Very Good</label>
                     </div>
                     <div class="rating-option">
                         <input type="radio" name="labs_rating" value="5" id="q3_5">
@@ -341,7 +348,7 @@
         const user = JSON.parse(localStorage.getItem('user') || 'null');
         if (!user) window.location.href = 'index.html';
 
-        const form = document.getElementById('institutionForm');
+        const form = document.getElementById('departmentForm');
         form.name.value = user.name;
         form.email.value = user.email;
         form.registration_number.value = user.registration_no;

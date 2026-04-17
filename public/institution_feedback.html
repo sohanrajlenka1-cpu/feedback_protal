@@ -136,6 +136,13 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
+        @media (max-width: 500px) {
+            .container { padding: 1.2rem; }
+            h1 { font-size: 1.2rem; }
+            .rating-scale { flex-wrap: wrap; gap: 0.3rem; }
+            .rating-option { min-width: 45px; flex: none; width: 18%; }
+            .rating-option label { font-size: 0.7rem; }
+        }
     </style>
 </head>
 <body>

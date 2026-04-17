@@ -41,6 +41,13 @@
             cursor: pointer; width: 100%; margin-top: 1rem;
         }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        @media (max-width: 500px) {
+            .container { padding: 1.2rem; }
+            h1 { font-size: 1.2rem; }
+            .rating-scale { flex-wrap: wrap; gap: 0.3rem; }
+            .rating-option { min-width: 45px; flex: none; width: 18%; }
+            .rating-option label { font-size: 0.7rem; }
+        }
     </style>
 </head>
 <body>
@@ -169,22 +176,22 @@
              <div class="form-group">
                 <label>Overall Learning enviroment to facilities ananlysis of Engineering Problems? <span class="required">*</span></label>
                 <div class="rating-scale">
-                    <div class="rating-option"><input type="radio" name="learning_environment" value="1" id="q5_1" required><label for="q5_1">1 - Never</label></div>
-                    <div class="rating-option"><input type="radio" name="learning_environment" value="2" id="q5_2"><label for="q5_2">2 - Unlikely</label></div>
-                    <div class="rating-option"><input type="radio" name="learning_environment" value="3" id="q5_3"><label for="q5_3">3 - Maybe</label></div>
-                    <div class="rating-option"><input type="radio" name="learning_environment" value="4" id="q5_4"><label for="q5_4">4 - Likely</label></div>
-                    <div class="rating-option"><input type="radio" name="learning_environment" value="5" id="q5_5"><label for="q5_5">5 - Definitely</label></div>
+                    <div class="rating-option"><input type="radio" name="learning_environment" value="1" id="q7_1" required><label for="q7_1">1 - Never</label></div>
+                    <div class="rating-option"><input type="radio" name="learning_environment" value="2" id="q7_2"><label for="q7_2">2 - Unlikely</label></div>
+                    <div class="rating-option"><input type="radio" name="learning_environment" value="3" id="q7_3"><label for="q7_3">3 - Maybe</label></div>
+                    <div class="rating-option"><input type="radio" name="learning_environment" value="4" id="q7_4"><label for="q7_4">4 - Likely</label></div>
+                    <div class="rating-option"><input type="radio" name="learning_environment" value="5" id="q7_5"><label for="q7_5">5 - Definitely</label></div>
                 </div>
             </div>
 
                  <div class="form-group">
                 <label>Facilities available to incorporate methodological training in the field of electronics? <span class="required">*</span></label>
                 <div class="rating-scale">
-                    <div class="rating-option"><input type="radio" name="facilities" value="1" id="q5_1" required><label for="q5_1">1 - Never</label></div>
-                    <div class="rating-option"><input type="radio" name="facilities" value="2" id="q5_2"><label for="q5_2">2 - Unlikely</label></div>
-                    <div class="rating-option"><input type="radio" name="facilities" value="3" id="q5_3"><label for="q5_3">3 - Maybe</label></div>
-                    <div class="rating-option"><input type="radio" name="facilities" value="4" id="q5_4"><label for="q5_4">4 - Likely</label></div>
-                    <div class="rating-option"><input type="radio" name="facilities" value="5" id="q5_5"><label for="q5_5">5 - Definitely</label></div>
+                    <div class="rating-option"><input type="radio" name="facilities" value="1" id="q8_1" required><label for="q8_1">1 - Never</label></div>
+                    <div class="rating-option"><input type="radio" name="facilities" value="2" id="q8_2"><label for="q8_2">2 - Unlikely</label></div>
+                    <div class="rating-option"><input type="radio" name="facilities" value="3" id="q8_3"><label for="q8_3">3 - Maybe</label></div>
+                    <div class="rating-option"><input type="radio" name="facilities" value="4" id="q8_4"><label for="q8_4">4 - Likely</label></div>
+                    <div class="rating-option"><input type="radio" name="facilities" value="5" id="q8_5"><label for="q8_5">5 - Definitely</label></div>
                 </div>
             </div>
 

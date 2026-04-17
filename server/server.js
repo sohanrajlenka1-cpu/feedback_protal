@@ -3,6 +3,7 @@ const cors = require('cors');
 const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
+const { initSync, pushChanges } = require('./git-sync');
 
 const app = express();
 app.use(cors());
@@ -15,6 +16,9 @@ const deptFeedbackCsv = path.join(dataDir, 'feedback_department.csv');
 const exitFeedbackCsv = path.join(dataDir, 'feedback_exit.csv');
 const parentsFeedbackCsv = path.join(dataDir, 'feedback_parents.csv');
 const usersCsv = path.join(dataDir, 'users.csv');
+
+if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+initSync();
 
 // Ensure CSV files exist with headers
 function ensureCsv(file, headers) {
@@ -94,6 +98,7 @@ app.post('/api/signup', (req, res) => {
     }
     const id = getNextId(usersCsv);
     appendRow(usersCsv, [id, name, email, registration_no || '', role, hashPassword(password), new Date().toISOString()]);
+    pushChanges('new user signup');
     res.json({ user: { id, name, email, registration_no: registration_no || '', role } });
 });
 
@@ -150,6 +155,7 @@ app.post('/submit-feedback', (req, res) => {
                 academic_year, education_quality, faculty_satisfaction, infrastructure_rating,
                 improvements, comments, now]);
         }
+        pushChanges('institution feedback');
         res.json({ status: 'success' });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -177,6 +183,7 @@ app.post('/submit-department-feedback', (req, res) => {
                 academic_year, education_quality, faculty_satisfaction, labs_rating,
                 department_activities, faculty_bonding, improvements, comments, now]);
         }
+        pushChanges('department feedback');
         res.json({ status: 'success' });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -206,6 +213,7 @@ app.post('/submit-exit-feedback', (req, res) => {
                 practical_classes, beyond_syllabus, team_spirit, improvements,
                 learning_environment, facilities, comments, now]);
         }
+        pushChanges('exit feedback');
         res.json({ status: 'success' });
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -238,6 +246,7 @@ app.post('/submit-parents-feedback', (req, res) => {
                 placement_drive, internship_program, extracurricular_activities,
                 curriculum_satisfaction, comments, now]);
         }
+        pushChanges('parents feedback');
         res.json({ status: 'success' });
     } catch (err) {
         res.status(500).json({ error: err.message });
