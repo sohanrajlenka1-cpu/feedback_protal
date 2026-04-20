@@ -27,7 +27,7 @@ function ensureCsv(file, headers) {
 ensureCsv(usersCsv, 'id,name,email,registration_no,role,password,created_at');
 ensureCsv(feedbackCsv, 'id,name,email,registration_number,department,academic_year,education_quality,faculty_satisfaction,infrastructure_rating,improvements,comments,submitted_at');
 ensureCsv(deptFeedbackCsv, 'id,name,email,registration_number,department,academic_year,education_quality,faculty_satisfaction,labs_rating,department_activities,faculty_bonding,improvements,comments,submitted_at');
-ensureCsv(exitFeedbackCsv, 'id,name,email,registration_number,department,year_of_passing,basic_discipline_knowledge,growth_analytical_skills,capacity_building,practical_classes,beyond_syllabus,team_spirit,improvements,learning_environment,facilities,comments,submitted_at');
+ensureCsv(exitFeedbackCsv, 'id,name,email,registration_number,department,year_of_passing,online_admission_process,institution_infrastructure,canteen_facilities,washroom_facilities,library_facilities,hostel_facilities,improvements,placement_facilities,student_graviance,course_curriculum,practical_training,computer_labs,student_centric_activities,student_faculty_bonding,overall_rating,comments,submitted_at');
 ensureCsv(parentsFeedbackCsv, 'id,name,student_name,email,registration_number,department,academic_year,teaching_learning,students_interaction,academic_facilities,students_discipline,overall_facilities,career_guidance,placement_drive,internship_program,extracurricular_activities,curriculum_satisfaction,comments,submitted_at');
 
 function csvEscape(val) {
@@ -194,24 +194,30 @@ app.post('/submit-department-feedback', (req, res) => {
 app.post('/submit-exit-feedback', (req, res) => {
     try {
         const { name, email, registration_number, department, year_of_passing,
-                basic_discipline_knowledge, growth_analytical_skills, capacity_building,
-                practical_classes, beyond_syllabus, team_spirit, improvements,
-                learning_environment, facilities, comments } = req.body;
+                online_admission_process, institution_infrastructure, canteen_facilities,
+                washroom_facilities, library_facilities, hostel_facilities, improvements,
+                placement_facilities, student_graviance, course_curriculum,
+                practical_training, computer_labs, student_centric_activities,
+                student_faculty_bonding, overall_rating, comments } = req.body;
         const rows = parseCsv(exitFeedbackCsv);
         const idx = rows.findIndex(r => r.registration_number === registration_number);
         const now = new Date().toISOString();
         if (idx >= 0) {
             Object.assign(rows[idx], { name, email, registration_number, department, year_of_passing,
-                basic_discipline_knowledge, growth_analytical_skills, capacity_building,
-                practical_classes, beyond_syllabus, team_spirit, improvements,
-                learning_environment, facilities, comments, submitted_at: now });
+                online_admission_process, institution_infrastructure, canteen_facilities,
+                washroom_facilities, library_facilities, hostel_facilities, improvements,
+                placement_facilities, student_graviance, course_curriculum,
+                practical_training, computer_labs, student_centric_activities,
+                student_faculty_bonding, overall_rating, comments, submitted_at: now });
             rewriteCsv(exitFeedbackCsv, rows);
         } else {
             const id = getNextId(exitFeedbackCsv);
             appendRow(exitFeedbackCsv, [id, name, email, registration_number, department,
-                year_of_passing, basic_discipline_knowledge, growth_analytical_skills, capacity_building,
-                practical_classes, beyond_syllabus, team_spirit, improvements,
-                learning_environment, facilities, comments, now]);
+                year_of_passing, online_admission_process, institution_infrastructure, canteen_facilities,
+                washroom_facilities, library_facilities, hostel_facilities, improvements,
+                placement_facilities, student_graviance, course_curriculum,
+                practical_training, computer_labs, student_centric_activities,
+                student_faculty_bonding, overall_rating, comments, now]);
         }
         pushChanges('exit feedback');
         res.json({ status: 'success' });
