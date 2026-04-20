@@ -239,7 +239,7 @@
             .then(r => r.json())
             .then(({ feedback: fb }) => {
                 if (!fb) return;
-                form.student_name.value = fb.student_name || '';
+                form.querySelector('input[name="student_name"]').value = fb.Student_name || '';
                 form.department.value = fb.department;
                 form.academic_year.value = fb.academic_year;
                 const radios = ['teaching_learning','students_interaction','academic_facilities','students_discipline','overall_facilities','career_guidance'];
