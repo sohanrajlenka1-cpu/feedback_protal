@@ -24,11 +24,11 @@ initSync();
 function ensureCsv(file, headers) {
     if (!fs.existsSync(file)) fs.writeFileSync(file, headers + '\n');
 }
-ensureCsv(usersCsv, 'S.no,name,email,registration_no,role,password,created_at');
-ensureCsv(feedbackCsv, 'S.no,name,email,registration_number,department,academic_year,education_quality,faculty_satisfaction,infrastructure_rating,improvements,comments,submitted_at');
-ensureCsv(deptFeedbackCsv, 'S.no,name,email,registration_number,department,academic_year,education_quality,faculty_satisfaction,labs_rating,department_activities,faculty_bonding,improvements,comments,submitted_at');
-ensureCsv(exitFeedbackCsv, 'S.no,name,email,registration_number,department,year_of_passing,online_admission_process,institution_infrastructure,canteen_facilities,washroom_facilities,library_facilities,hostel_facilities,improvements,placement_facilities,student_graviance,course_curriculum,practical_training,computer_labs,student_centric_activities,student_faculty_bonding,overall_rating,comments,submitted_at');
-ensureCsv(parentsFeedbackCsv, 'S.no,name,student_name,email,registration_number,department,academic_year,teaching_learning,students_interaction,academic_facilities,students_discipline,overall_facilities,career_guidance,placement_drive,internship_program,extracurricular_activities,curriculum_satisfaction,comments,submitted_at');
+ensureCsv(usersCsv, 'S.no,Name,Email,Registration No,role,password,created_at');
+ensureCsv(feedbackCsv, 'S.no,Name,Email,Registration No,department,academic_year,education_quality,faculty_satisfaction,infrastructure_rating,improvements,comments,submitted_at');
+ensureCsv(deptFeedbackCsv, 'S.no,Name,Email,Registration No,department,academic_year,education_quality,faculty_satisfaction,labs_rating,department_activities,faculty_bonding,improvements,comments,submitted_at');
+ensureCsv(exitFeedbackCsv, 'S.no,Name,Email,Registration No,department,year_of_passing,online_admission_process,institution_infrastructure,canteen_facilities,washroom_facilities,library_facilities,hostel_facilities,improvements,placement_facilities,student_graviance,course_curriculum,practical_training,computer_labs,student_centric_activities,student_faculty_bonding,overall_rating,comments,submitted_at');
+ensureCsv(parentsFeedbackCsv, 'S.no,Name,student_name,Email,Registration No,department,academic_year,teaching_learning,students_interaction,academic_facilities,students_discipline,overall_facilities,career_guidance,placement_drive,internship_program,extracurricular_activities,curriculum_satisfaction,comments,submitted_at');
 
 function csvEscape(val) {
     const s = String(val ?? '');
@@ -87,12 +87,12 @@ app.post('/api/signup', (req, res) => {
         return res.status(403).json({ error: 'Invalid admin code' });
     }
     const users = parseCsv(usersCsv);
-    if (users.find(u => u.email === email)) {
+    if (users.find(u => u.Email === email)) {
         return res.status(400).json({ error: 'Email already registered' });
     }
     if (role === 'student') {
         if (!registration_no) return res.status(400).json({ error: 'Registration number is required' });
-        if (users.find(u => u.registration_no === registration_no)) {
+        if (users.find(u => u['Registration No'] === registration_no)) {
             return res.status(400).json({ error: 'Registration number already registered' });
         }
     }
@@ -105,33 +105,33 @@ app.post('/api/signup', (req, res) => {
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
     const users = parseCsv(usersCsv);
-    const user = users.find(u => u.email === email && u.password === hashPassword(password));
+    const user = users.find(u => u.Email === email && u.password === hashPassword(password));
     if (!user) return res.status(401).json({ error: 'Invalid email or password' });
-    res.json({ user: { id: user.id, name: user.name, email: user.email, registration_no: user.registration_no, role: user.role } });
+    res.json({ user: { id: user['S.no'], name: user.Name, email: user.Email, registration_no: user['Registration No'], role: user.role } });
 });
 
 // Get existing feedback
 app.get('/api/feedback/institution/:regNo', (req, res) => {
     const rows = parseCsv(feedbackCsv);
-    const existing = rows.find(r => r.registration_number === req.params.regNo);
+    const existing = rows.find(r => r['Registration No'] === req.params.regNo);
     res.json({ feedback: existing || null });
 });
 
 app.get('/api/feedback/department/:regNo', (req, res) => {
     const rows = parseCsv(deptFeedbackCsv);
-    const existing = rows.find(r => r.registration_number === req.params.regNo);
+    const existing = rows.find(r => r['Registration No'] === req.params.regNo);
     res.json({ feedback: existing || null });
 });
 
 app.get('/api/feedback/exit/:regNo', (req, res) => {
     const rows = parseCsv(exitFeedbackCsv);
-    const existing = rows.find(r => r.registration_number === req.params.regNo);
+    const existing = rows.find(r => r['Registration No'] === req.params.regNo);
     res.json({ feedback: existing || null });
 });
 
 app.get('/api/feedback/parents/:regNo', (req, res) => {
     const rows = parseCsv(parentsFeedbackCsv);
-    const existing = rows.find(r => r.registration_number === req.params.regNo);
+    const existing = rows.find(r => r['Registration No'] === req.params.regNo);
     res.json({ feedback: existing || null });
 });
 
@@ -142,10 +142,10 @@ app.post('/submit-feedback', (req, res) => {
                 education_quality, faculty_satisfaction, infrastructure_rating,
                 improvements, comments } = req.body;
         const rows = parseCsv(feedbackCsv);
-        const idx = rows.findIndex(r => r.registration_number === registration_number);
+        const idx = rows.findIndex(r => r['Registration No'] === registration_number);
         const now = new Date().toISOString();
         if (idx >= 0) {
-            Object.assign(rows[idx], { name, email, registration_number, department, academic_year,
+            Object.assign(rows[idx], { Name: name, Email: email, 'Registration No': registration_number, department, academic_year,
                 education_quality, faculty_satisfaction, infrastructure_rating,
                 improvements, comments, submitted_at: now });
             rewriteCsv(feedbackCsv, rows);
@@ -170,10 +170,10 @@ app.post('/submit-department-feedback', (req, res) => {
                 department_activities, faculty_bonding,
                 improvements, comments } = req.body;
         const rows = parseCsv(deptFeedbackCsv);
-        const idx = rows.findIndex(r => r.registration_number === registration_number);
+        const idx = rows.findIndex(r => r['Registration No'] === registration_number);
         const now = new Date().toISOString();
         if (idx >= 0) {
-            Object.assign(rows[idx], { name, email, registration_number, department, academic_year,
+            Object.assign(rows[idx], { Name: name, Email: email, 'Registration No': registration_number, department, academic_year,
                 education_quality, faculty_satisfaction, labs_rating,
                 department_activities, faculty_bonding, improvements, comments, submitted_at: now });
             rewriteCsv(deptFeedbackCsv, rows);
@@ -200,10 +200,10 @@ app.post('/submit-exit-feedback', (req, res) => {
                 practical_training, computer_labs, student_centric_activities,
                 student_faculty_bonding, overall_rating, comments } = req.body;
         const rows = parseCsv(exitFeedbackCsv);
-        const idx = rows.findIndex(r => r.registration_number === registration_number);
+        const idx = rows.findIndex(r => r['Registration No'] === registration_number);
         const now = new Date().toISOString();
         if (idx >= 0) {
-            Object.assign(rows[idx], { name, email, registration_number, department, year_of_passing,
+            Object.assign(rows[idx], { Name: name, Email: email, 'Registration No': registration_number, department, year_of_passing,
                 online_admission_process, institution_infrastructure, canteen_facilities,
                 washroom_facilities, library_facilities, hostel_facilities, improvements,
                 placement_facilities, student_graviance, course_curriculum,
@@ -235,10 +235,10 @@ app.post('/submit-parents-feedback', (req, res) => {
                 placement_drive, internship_program, extracurricular_activities,
                 curriculum_satisfaction, comments } = req.body;
         const rows = parseCsv(parentsFeedbackCsv);
-        const idx = rows.findIndex(r => r.registration_number === registration_number);
+        const idx = rows.findIndex(r => r['Registration No'] === registration_number);
         const now = new Date().toISOString();
         if (idx >= 0) {
-            Object.assign(rows[idx], { name, student_name, email, registration_number, department, academic_year,
+            Object.assign(rows[idx], { Name: name, student_name, Email: email, 'Registration No': registration_number, department, academic_year,
                 teaching_learning, students_interaction, academic_facilities,
                 students_discipline, overall_facilities, career_guidance,
                 placement_drive, internship_program, extracurricular_activities,
