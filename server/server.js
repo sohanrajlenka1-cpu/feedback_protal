@@ -28,7 +28,7 @@ ensureCsv(usersCsv, 'S.no,Name,Email,Registration No,role,password,created_at');
 ensureCsv(feedbackCsv, 'S.no,Name,Email,Registration No,department,academic_year,education_quality,faculty_satisfaction,infrastructure_rating,improvements,comments,submitted_at');
 ensureCsv(deptFeedbackCsv, 'S.no,Name,Email,Registration No,department,academic_year,education_quality,faculty_satisfaction,labs_rating,department_activities,faculty_bonding,improvements,comments,submitted_at');
 ensureCsv(exitFeedbackCsv, 'S.no,Name,Email,Registration No,department,year_of_passing,online_admission_process,institution_infrastructure,canteen_facilities,washroom_facilities,library_facilities,hostel_facilities,improvements,placement_facilities,student_graviance,course_curriculum,practical_training,computer_labs,student_centric_activities,student_faculty_bonding,overall_rating,comments,submitted_at');
-ensureCsv(parentsFeedbackCsv, 'S.no,Name,student_name,Email,Registration No,department,academic_year,teaching_learning,students_interaction,academic_facilities,students_discipline,overall_facilities,career_guidance,placement_drive,internship_program,extracurricular_activities,curriculum_satisfaction,comments,submitted_at');
+ensureCsv(parentsFeedbackCsv, 'S.no,Name,Student_name,Email,Registration No,department,academic_year,teaching_learning,students_interaction,academic_facilities,students_discipline,overall_facilities,career_guidance,placement_drive,internship_program,extracurricular_activities,curriculum_satisfaction,comments,submitted_at');
 
 function csvEscape(val) {
     const s = String(val ?? '');
@@ -238,7 +238,7 @@ app.post('/submit-parents-feedback', (req, res) => {
         const idx = rows.findIndex(r => r['Registration No'] === registration_number);
         const now = new Date().toISOString();
         if (idx >= 0) {
-            Object.assign(rows[idx], { Name: name, student_name, Email: email, 'Registration No': registration_number, department, academic_year,
+            Object.assign(rows[idx], { Name: name, Student_name: student_name, Email: email, 'Registration No': registration_number, department, academic_year,
                 teaching_learning, students_interaction, academic_facilities,
                 students_discipline, overall_facilities, career_guidance,
                 placement_drive, internship_program, extracurricular_activities,
