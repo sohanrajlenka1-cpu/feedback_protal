@@ -235,16 +235,19 @@
         form.querySelector('input[name="registration_number"]').value = user.registration_no;
         form.querySelector('input[name="registration_number"]').readOnly = true;
 
+        const ratingFields = ['teaching_learning','students_interaction','academic_facilities','students_discipline','overall_facilities','career_guidance'];
+        const checkboxFields = ['placement_drive','internship_program','extracurricular_activities','curriculum_satisfaction'];
+
+        // Load existing feedback
         fetch('/api/feedback/parents/' + encodeURIComponent(user.registration_no))
             .then(r => r.json())
             .then(({ feedback: fb }) => {
                 if (!fb) return;
-                form.querySelector('input[name="student_name"]').value = fb.Student_name || '';
+                form.querySelector('input[name="name"]').value = fb.Name || '';
                 form.department.value = fb.department;
                 form.academic_year.value = fb.academic_year;
-                const radios = ['teaching_learning','students_interaction','academic_facilities','students_discipline','overall_facilities','career_guidance'];
-                radios.forEach(n => { const r = form.querySelector(`input[name="${n}"][value="${fb[n]}"]`); if (r) r.checked = true; });
-                ['placement_drive','internship_program','extracurricular_activities','curriculum_satisfaction'].forEach(n => {
+                ratingFields.forEach(n => { const r = form.querySelector(`input[name="${n}"][value="${fb[n]}"]`); if (r) r.checked = true; });
+                checkboxFields.forEach(n => {
                     if (fb[n]) fb[n].split(', ').forEach(v => { const c = form.querySelector(`input[name="${n}"][value="${v}"]`); if (c) c.checked = true; });
                 });
                 form.comments.value = fb.comments || '';
