@@ -1,6 +1,0 @@
-id,name,email,registration_number,department,academic_year,education_quality,faculty_satisfaction,infrastructure_rating,improvements,comments,submitted_at
-1,sohan,sohan@gmail.com,1234,BEAUTY CULTURE,2022-2025,5,5,5,Teaching Quality,NA,2026-02-25 18:13:04
-2,hello,hello@gmail.com,12345,BEAUTY CULTURE,2023-2026,5,5,5,Teaching Quality,,2026-02-25 18:14:26
-3,hwii,hwii@gmail.com,73629-0923,PHARMACY,2024-2027,3,3,3,"Teaching Quality, Infrastructure, Library Resources, Laboratory Equipment, Extracurricular Activities, Administrative Support",,2026-02-25 18:30:29
-4,test,test@test.com,123,IT,2024,5,5,5,test,test,2026-03-16T11:58:17.408Z
-5,sohan,sohan@gamil.com,F230134024037,INFORMATION TECHNOLOGY,2023-2026,5,5,5,"Teaching Quality, Infrastructure, Library Resources, Laboratory Equipment, Extracurricular Activities, Administrative Support",,2026-03-16T12:02:53.324Z
