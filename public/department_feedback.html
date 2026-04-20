@@ -349,12 +349,12 @@
         if (!user) window.location.href = 'index.html';
 
         const form = document.getElementById('departmentForm');
-        form.name.value = user.name;
-        form.email.value = user.email;
-        form.registration_number.value = user.registration_no;
-        form.name.readOnly = true;
-        form.email.readOnly = true;
-        form.registration_number.readOnly = true;
+        form.querySelector('input[name="name"]').value = user.name;
+        form.querySelector('input[name="email"]').value = user.email;
+        form.querySelector('input[name="registration_number"]').value = user.registration_no;
+        form.querySelector('input[name="name"]').readOnly = true;
+        form.querySelector('input[name="email"]').readOnly = true;
+        form.querySelector('input[name="registration_number"]').readOnly = true;
 
         // Load existing feedback
         fetch('/api/feedback/department/' + encodeURIComponent(user.registration_no))

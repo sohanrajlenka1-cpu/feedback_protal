@@ -24,11 +24,11 @@ initSync();
 function ensureCsv(file, headers) {
     if (!fs.existsSync(file)) fs.writeFileSync(file, headers + '\n');
 }
-ensureCsv(usersCsv, 'S.no,name,email,registration_no,role,password,created_at');
-ensureCsv(feedbackCsv, 'S.no,name,email,registration_number,department,academic_year,education_quality,faculty_satisfaction,infrastructure_rating,improvements,comments,submitted_at');
-ensureCsv(deptFeedbackCsv, 'S.no,name,email,registration_number,department,academic_year,education_quality,faculty_satisfaction,labs_rating,department_activities,faculty_bonding,improvements,comments,submitted_at');
-ensureCsv(exitFeedbackCsv, 'S.no,name,email,registration_number,department,year_of_passing,online_admission_process,institution_infrastructure,canteen_facilities,washroom_facilities,library_facilities,hostel_facilities,improvements,placement_facilities,student_graviance,course_curriculum,practical_training,computer_labs,student_centric_activities,student_faculty_bonding,overall_rating,comments,submitted_at');
-ensureCsv(parentsFeedbackCsv, 'S.no,name,student_name,email,registration_number,department,academic_year,teaching_learning,students_interaction,academic_facilities,students_discipline,overall_facilities,career_guidance,placement_drive,internship_program,extracurricular_activities,curriculum_satisfaction,comments,submitted_at');
+ensureCsv(usersCsv, 'id,name,email,registration_no,role,password,created_at');
+ensureCsv(feedbackCsv, 'id,name,email,registration_number,department,academic_year,education_quality,faculty_satisfaction,infrastructure_rating,improvements,comments,submitted_at');
+ensureCsv(deptFeedbackCsv, 'id,name,email,registration_number,department,academic_year,education_quality,faculty_satisfaction,labs_rating,department_activities,faculty_bonding,improvements,comments,submitted_at');
+ensureCsv(exitFeedbackCsv, 'id,name,email,registration_number,department,year_of_passing,online_admission_process,institution_infrastructure,canteen_facilities,washroom_facilities,library_facilities,hostel_facilities,improvements,placement_facilities,student_graviance,course_curriculum,practical_training,computer_labs,student_centric_activities,student_faculty_bonding,overall_rating,comments,submitted_at');
+ensureCsv(parentsFeedbackCsv, 'id,name,student_name,email,registration_number,department,academic_year,teaching_learning,students_interaction,academic_facilities,students_discipline,overall_facilities,career_guidance,placement_drive,internship_program,extracurricular_activities,curriculum_satisfaction,comments,submitted_at');
 
 function csvEscape(val) {
     const s = String(val ?? '');
