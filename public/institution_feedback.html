@@ -311,13 +311,14 @@
             .then(r => r.json())
             .then(({ feedback: fb }) => {
                 if (!fb) return;
-                form.department.value = fb.department;
-                form.academic_year.value = fb.academic_year;
+                form.querySelector('select[name="department"]').value = fb.department || '';
+                form.querySelector('select[name="academic_year"]').value = fb.academic_year || '';
                 const radios = ['education_quality','faculty_satisfaction','infrastructure_rating'];
                 radios.forEach(n => { const r = form.querySelector(`input[name="${n}"][value="${fb[n]}"]`); if (r) r.checked = true; });
                 if (fb.improvements) fb.improvements.split(', ').forEach(v => { const c = form.querySelector(`input[name="improvements"][value="${v}"]`); if (c) c.checked = true; });
-                form.comments.value = fb.comments || '';
-            });
+                form.querySelector('textarea[name="comments"]').value = fb.comments || '';
+            })
+            .catch(() => {});
 
         form.addEventListener('submit', async function(e) {
             e.preventDefault();

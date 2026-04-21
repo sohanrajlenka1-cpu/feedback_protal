@@ -289,12 +289,13 @@
             .then(r => r.json())
             .then(({ feedback: fb }) => {
                 if (!fb) return;
-                form.department.value = fb.department;
-                form.year_of_passing.value = fb.year_of_passing;
+                form.querySelector('select[name="department"]').value = fb.department || '';
+                form.querySelector('select[name="year_of_passing"]').value = fb.year_of_passing || '';
                 ratingFields.forEach(n => { const r = form.querySelector(`input[name="${n}"][value="${fb[n]}"]`); if (r) r.checked = true; });
                 if (fb.improvements) fb.improvements.split(', ').forEach(v => { const c = form.querySelector(`input[name="improvements"][value="${v}"]`); if (c) c.checked = true; });
-                form.comments.value = fb.comments || '';
-            });
+                form.querySelector('textarea[name="comments"]').value = fb.comments || '';
+            })
+            .catch(() => {});
 
         form.addEventListener('submit', async function(e) {
             e.preventDefault();

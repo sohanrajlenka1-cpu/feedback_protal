@@ -254,6 +254,7 @@ app.post('/submit-parents-feedback', (req, res) => {
                 students_discipline, overall_facilities, career_guidance,
                 placement_drive, internship_program, extracurricular_activities,
                 curriculum_satisfaction, comments } = req.body;
+        if (!registration_number) return res.status(400).json({ error: 'Registration number is required' });
         const rows = parseCsv(parentsFeedbackCsv);
         const idx = rows.findIndex(r => r['Registration No'] === registration_number);
         const now = new Date().toISOString();
@@ -275,6 +276,7 @@ app.post('/submit-parents-feedback', (req, res) => {
         pushChanges('parents feedback');
         res.json({ status: 'success' });
     } catch (err) {
+        console.error('Parents feedback error:', err);
         res.status(500).json({ error: err.message });
     }
 });
