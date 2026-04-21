@@ -130,7 +130,8 @@ app.post('/api/reset-password', (req, res) => {
     res.json({ status: 'success' });
 });
 
-// Get existing feedback (req, res) => {
+// Get existing feedback
+app.get('/api/feedback/institution/:regNo', (req, res) => {
     const rows = parseCsv(feedbackCsv);
     const existing = rows.find(r => r['Registration No'] === req.params.regNo);
     res.json({ feedback: existing || null });
