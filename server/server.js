@@ -279,6 +279,26 @@ app.post('/submit-parents-feedback', (req, res) => {
 });
 
 // Admin APIs
+app.get('/api/admin/users', (req, res) => {
+    const users = parseCsv(usersCsv).map(u => ({
+        name: u.Name, email: u.Email, registration_no: u['Registration No'], role: u.role
+    }));
+    res.json({ data: users });
+});
+
+app.post('/api/admin/reset-password', (req, res) => {
+    const { email, new_password } = req.body;
+    if (!email || !new_password) return res.status(400).json({ error: 'Email and new password are required' });
+    if (new_password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    const users = parseCsv(usersCsv);
+    const idx = users.findIndex(u => u.Email === email);
+    if (idx < 0) return res.status(404).json({ error: 'User not found' });
+    users[idx].password = hashPassword(new_password);
+    rewriteCsv(usersCsv, users);
+    pushChanges('admin password reset');
+    res.json({ status: 'success' });
+});
+
 app.get('/api/admin/feedback/institution', (req, res) => {
     res.json({ data: parseCsv(feedbackCsv) });
 });

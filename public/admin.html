@@ -81,6 +81,37 @@
 
         .no-data { text-align: center; color: rgba(255,255,255,0.4); padding: 3rem; font-size: 1.1rem; }
 
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            z-index: 200; align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: #1a1a2e; border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px; padding: 2rem; width: 420px; max-width: 95%;
+        }
+        .modal h2 { font-size: 1.2rem; margin-bottom: 1.2rem; }
+        .modal .form-group { margin-bottom: 1rem; }
+        .modal label { display: block; color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-bottom: 0.3rem; }
+        .modal input {
+            width: 100%; padding: 0.65rem 0.8rem; border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px; background: rgba(255,255,255,0.07); color: #fff; font-size: 0.95rem;
+        }
+        .modal input:focus { outline: none; border-color: #764ba2; }
+        .modal input::placeholder { color: rgba(255,255,255,0.3); }
+        .modal .btn-row { display: flex; gap: 0.8rem; margin-top: 1.2rem; }
+        .modal .btn-row .btn { flex: 1; text-align: center; }
+        .btn-cancel { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
+        .btn-reset { background: linear-gradient(135deg, #f5576c, #764ba2); color: #fff; }
+        .modal .msg { font-size: 0.85rem; margin-top: 0.8rem; min-height: 1.2rem; text-align: center; }
+        .modal .msg.error { color: #ff6b6b; }
+        .modal .msg.success { color: #43e97b; }
+        .modal .user-info {
+            background: rgba(255,255,255,0.05); border-radius: 8px; padding: 0.8rem;
+            margin-bottom: 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.6); display: none;
+        }
+        .modal .user-info span { color: #fff; }
+
         @media (max-width: 700px) {
             .navbar { padding: 0.5rem 1rem; }
             .navbar .brand span { font-size: 0.95rem; }
@@ -120,14 +151,96 @@
     <div class="actions">
         <button class="btn btn-download" onclick="downloadCsv()">⬇ Download CSV</button>
         <button class="btn btn-download" onclick="downloadPDF()">📄 Download PDF</button>
+        <button class="btn btn-reset" onclick="openResetModal()">🔑 Reset Password</button>
     </div>
 
     <div id="content"></div>
 </div>
 
+<div class="modal-overlay" id="resetModal">
+    <div class="modal">
+        <h2>🔑 Reset Student Password</h2>
+        <div class="form-group">
+            <label>Search by Email or Registration No</label>
+            <input type="text" id="resetSearch" placeholder="Enter email or registration number" oninput="searchUser()">
+        </div>
+        <div class="user-info" id="userInfo">
+            <div>Name: <span id="foundName"></span></div>
+            <div>Email: <span id="foundEmail"></span></div>
+            <div>Reg No: <span id="foundReg"></span></div>
+        </div>
+        <div class="form-group">
+            <label>New Password</label>
+            <input type="password" id="resetNewPw" placeholder="Enter new password" minlength="6">
+        </div>
+        <div class="btn-row">
+            <button class="btn btn-cancel" onclick="closeResetModal()">Cancel</button>
+            <button class="btn btn-reset" onclick="resetPassword()">Reset Password</button>
+        </div>
+        <p class="msg" id="resetMsg"></p>
+    </div>
+</div>
+
 <script>
     const user = JSON.parse(localStorage.getItem('user') || 'null');
     if (!user || user.role !== 'admin') window.location.href = 'index.html';
+
+    let allUsers = [];
+    let selectedUser = null;
+
+    function openResetModal() {
+        document.getElementById('resetModal').classList.add('active');
+        document.getElementById('resetSearch').value = '';
+        document.getElementById('resetNewPw').value = '';
+        document.getElementById('resetMsg').textContent = '';
+        document.getElementById('resetMsg').className = 'msg';
+        document.getElementById('userInfo').style.display = 'none';
+        selectedUser = null;
+        fetch('/api/admin/users').then(r => r.json()).then(d => { allUsers = d.data || []; });
+    }
+
+    function closeResetModal() {
+        document.getElementById('resetModal').classList.remove('active');
+    }
+
+    function searchUser() {
+        const q = document.getElementById('resetSearch').value.trim().toLowerCase();
+        const info = document.getElementById('userInfo');
+        if (!q) { info.style.display = 'none'; selectedUser = null; return; }
+        const found = allUsers.find(u => u.email.toLowerCase() === q || u.registration_no.toLowerCase() === q);
+        if (found) {
+            selectedUser = found;
+            document.getElementById('foundName').textContent = found.name;
+            document.getElementById('foundEmail').textContent = found.email;
+            document.getElementById('foundReg').textContent = found.registration_no || 'N/A';
+            info.style.display = 'block';
+        } else {
+            info.style.display = 'none';
+            selectedUser = null;
+        }
+    }
+
+    async function resetPassword() {
+        const msg = document.getElementById('resetMsg');
+        if (!selectedUser) { msg.textContent = 'Search and select a user first'; msg.className = 'msg error'; return; }
+        const pw = document.getElementById('resetNewPw').value;
+        if (pw.length < 6) { msg.textContent = 'Password must be at least 6 characters'; msg.className = 'msg error'; return; }
+        try {
+            const res = await fetch('/api/admin/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: selectedUser.email, new_password: pw })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                msg.textContent = 'Password reset successfully!';
+                msg.className = 'msg success';
+                setTimeout(closeResetModal, 1500);
+            } else {
+                msg.textContent = data.error; msg.className = 'msg error';
+            }
+        } catch { msg.textContent = 'Server error'; msg.className = 'msg error'; }
+    }
 
     let currentType = 'department';
     let charts = [];
