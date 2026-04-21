@@ -142,6 +142,27 @@
             transition: color 0.3s;
         }
         .admin-link a:hover { color: #764ba2; }
+        .pw-wrapper {
+            position: relative;
+        }
+        .pw-wrapper input { padding-right: 2.5rem; }
+        .pw-toggle {
+            position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: rgba(255,255,255,0.4);
+            cursor: pointer; font-size: 1.1rem; padding: 0;
+        }
+        .pw-toggle:hover { color: rgba(255,255,255,0.7); }
+        .forgot-link {
+            text-align: right; margin-top: 0.3rem;
+        }
+        .forgot-link a {
+            color: rgba(255,255,255,0.4); font-size: 0.8rem; text-decoration: none;
+        }
+        .forgot-link a:hover { color: #764ba2; }
+        .success-msg {
+            color: #43e97b; text-align: center; font-size: 0.85rem;
+            margin-top: 0.5rem; min-height: 1.2rem;
+        }
         @media (max-width: 480px) {
             .card { width: 95%; padding: 1.5rem 1.2rem; }
             .card h1 { font-size: 1.4rem; }
@@ -167,10 +188,36 @@
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" placeholder="••••••••" required>
+                <div class="pw-wrapper">
+                    <input type="password" name="password" placeholder="••••••••" required>
+                    <button type="button" class="pw-toggle" onclick="togglePw(this)">👁</button>
+                </div>
+                <div class="forgot-link"><a href="#" onclick="showForgot()">Forgot Password?</a></div>
             </div>
             <button type="submit" class="btn">Login</button>
             <p class="error" id="loginError"></p>
+        </form>
+
+        <form id="forgotForm" class="hidden" onsubmit="handleForgot(event)">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter your registered email" required>
+            </div>
+            <div class="form-group">
+                <label>Registration No</label>
+                <input type="text" name="registration_no" placeholder="Enter your registration number" required>
+            </div>
+            <div class="form-group">
+                <label>New Password</label>
+                <div class="pw-wrapper">
+                    <input type="password" name="new_password" placeholder="••••••••" minlength="6" required>
+                    <button type="button" class="pw-toggle" onclick="togglePw(this)">👁</button>
+                </div>
+            </div>
+            <button type="submit" class="btn">Reset Password</button>
+            <p class="error" id="forgotError"></p>
+            <p class="success-msg" id="forgotSuccess"></p>
+            <div class="forgot-link" style="text-align:center; margin-top:1rem;"><a href="#" onclick="switchTab('login')">← Back to Login</a></div>
         </form>
 
         <form id="signupForm" class="hidden" onsubmit="handleSignup(event)">
@@ -203,7 +250,10 @@
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" placeholder="••••••••" minlength="6" required>
+                <div class="pw-wrapper">
+                    <input type="password" name="password" placeholder="••••••••" minlength="6" required>
+                    <button type="button" class="pw-toggle" onclick="togglePw(this)">👁</button>
+                </div>
             </div>
             <button type="submit" class="btn">Create Account</button>
             <p class="error" id="signupError"></p>
@@ -225,9 +275,29 @@
             );
         }
 
+        function togglePw(btn) {
+            const input = btn.previousElementSibling;
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            btn.textContent = isPassword ? '🙈' : '👁';
+        }
+
+        function showForgot() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('signupForm').classList.add('hidden');
+            document.getElementById('forgotForm').classList.remove('hidden');
+            document.querySelector('.tabs').style.display = 'none';
+            document.querySelector('.card h1').textContent = '🔑 Reset Password';
+            document.querySelector('.card .subtitle').textContent = 'Verify your identity to reset password';
+        }
+
         function switchTab(tab) {
             document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
             document.getElementById('signupForm').classList.toggle('hidden', tab !== 'signup');
+            document.getElementById('forgotForm').classList.add('hidden');
+            document.querySelector('.tabs').style.display = 'flex';
+            document.querySelector('.card h1').textContent = '📝 Feedback Portal';
+            document.querySelector('.card .subtitle').textContent = 'Sign in to share your feedback';
             document.querySelectorAll('.tabs button').forEach((btn, i) => {
                 btn.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'signup' && i === 1));
             });
@@ -241,6 +311,27 @@
             document.getElementById('signupForm').classList.add('hidden');
             document.getElementById('loginForm').classList.remove('hidden');
             document.querySelector('.admin-link').innerHTML = '<a href="index.html">← Back to Student Login</a>';
+        }
+
+        async function handleForgot(e) {
+            e.preventDefault();
+            const form = new FormData(e.target);
+            document.getElementById('forgotError').textContent = '';
+            document.getElementById('forgotSuccess').textContent = '';
+            try {
+                const res = await fetch('/api/reset-password', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email: form.get('email'), registration_no: form.get('registration_no'), new_password: form.get('new_password') })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('forgotSuccess').textContent = 'Password reset successful! Redirecting...';
+                    setTimeout(() => switchTab('login'), 2000);
+                } else {
+                    document.getElementById('forgotError').textContent = data.error;
+                }
+            } catch { document.getElementById('forgotError').textContent = 'Server not running'; }
         }
 
         async function handleLogin(e) {

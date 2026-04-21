@@ -111,7 +111,26 @@ app.post('/api/login', (req, res) => {
 });
 
 // Get existing feedback
-app.get('/api/feedback/institution/:regNo', (req, res) => {
+app.post('/api/reset-password', (req, res) => {
+    const { email, registration_no, new_password } = req.body;
+    if (!email || !registration_no || !new_password) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+    if (new_password.length < 6) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+    const users = parseCsv(usersCsv);
+    const idx = users.findIndex(u => u.Email === email && u['Registration No'] === registration_no);
+    if (idx < 0) {
+        return res.status(404).json({ error: 'No account found with this email and registration number' });
+    }
+    users[idx].password = hashPassword(new_password);
+    rewriteCsv(usersCsv, users);
+    pushChanges('password reset');
+    res.json({ status: 'success' });
+});
+
+// Get existing feedback (req, res) => {
     const rows = parseCsv(feedbackCsv);
     const existing = rows.find(r => r['Registration No'] === req.params.regNo);
     res.json({ feedback: existing || null });
